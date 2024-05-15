@@ -1,0 +1,31 @@
+# frozen_string_literal: true
+- # This file provides a form for creating or editing future messages within the application.
+- # It includes fields for content, publication time, and optional associations with bubbles.
+
+= simple_form_for(@future_message) do |f|  # Creates a form for @future_message using simple_form
+  .card-body
+    = f.input :content, wrapper_html: { class: 'mb-3' }, label: "Future message"
+    # Input field for the content of the message, with a margin-bottom for spacing
+
+    = f.input :published_at, as: :datetime, wrapper_html: { class: 'mb-3' }, label: "When to publish ?"
+    # Datetime input for specifying the publication time of the message
+
+    - if @bubbles.present?
+      - @bubbles.each do |bubble|
+        .form-check
+          = f.check_box :bubble_ids, { multiple: true, class: 'form-check-input' }, bubble.id, nil
+          # Checkbox for each bubble, allowing multiple selections; part of a form group for visual grouping
+
+          = f.label :bubble_ids, bubble.name, class: 'form-check-label'
+          # Label for each checkbox, displaying the name of the bubble
+    - else
+      %p No bubbles available.
+      # Displays a message if no bubbles are available for association
+
+  .card-footer.d-flex
+    %button.btn.btn-primary{ type: 'submit' }
+      Save
+    # Submit button for the form, styled as a primary button for emphasis
+
+    = link_to 'Back', future_messages_path, class: 'btn btn-dark'
+    # 'Back' button to navigate away from the form, styled with Bootstrap's 'dark' class for visual consistency

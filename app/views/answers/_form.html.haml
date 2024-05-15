@@ -1,0 +1,35 @@
+= simple_form_for [@question, @answer], html: { multipart: true, id: 'answer-form' } do |f|
+  .card-body
+    = f.input :question_id, as: :hidden, input_html: { value: @question.id }  -# Hidden field to store the question's ID for the form submission
+
+    = f.input :content, as: :text, label: 'Your Answer', input_html: { rows: 4 }  -# Text area for inputting the answer with a label
+
+    - if @bubbles.present?  -# Conditional to check if there are any 'bubbles' to display
+      - @bubbles.each do |bubble|  -# Iterates over each 'bubble' object
+        .form-check
+          = f.check_box :bubble_ids, { multiple: true, class: 'form-check-input' }, bubble.id, nil  -# Checkboxes for selecting multiple bubbles
+          = f.label :bubble_ids, bubble.name, class: 'form-check-label'  -# Labels for each checkbox
+    - else
+      %p No bubbles available.  -# Displayed if no bubbles are available
+
+    #media-preview-container
+      - if @answer.media.attached?  -# Checks if there are any media attachments
+        %h5 Attached Media
+        - @answer.media.each do |media_attachment|  -# Iterates through each attached media
+          .attached-media
+            - if media_attachment.image?
+              = image_tag(media_attachment, class: 'img-fluid')  -# Displays image if the attachment is an image
+            - elsif media_attachment.video?
+              %video{controls: true, class: 'img-fluid'}
+                %source{src: url_for(media_attachment), type: media_attachment.content_type}  -# Video player for video attachments
+            - elsif media_attachment.audio?
+              %audio{controls: true}
+                %source{src: url_for(media_attachment), type: media_attachment.content_type}  -# Audio player for audio files
+            = link_to 'Remove', remove_media_answer_path(id: @answer.id, media_id: media_attachment.id), method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger'  -# Link to remove the media attachment with a confirmation prompt
+
+    = file_field_tag 'media[]', multiple: true, accept: 'image/*,video/*,audio/*', id: 'media-input-visual', class: 'form-control-file', style: 'display:none;'  -# Hidden file input for attaching media
+    %button.btn.btn-secondary{ type: 'button', id: 'media-select-btn' } Choose Files  -# Button to trigger the media selection dialog
+
+  .card-footer.d-flex
+    = f.button :submit, 'Save', class: 'btn btn-success'  -# Submit button to save the answer
+    = link_to 'Back', questions_path, class: 'btn btn-dark'  -# Back button to return to the questions page

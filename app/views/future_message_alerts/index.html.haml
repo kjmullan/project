@@ -1,0 +1,39 @@
+- # This file renders a table displaying future message alerts within the application.
+- # It includes actions to view and manage these alerts based on their active status.
+
+.card
+  .card-header.d-flex.align-items-center
+    %span Future Message Alerts  # Header of the card, displaying the purpose of this view
+
+  %table.table  # Bootstrap-styled table
+    %thead  # Table header section
+      %tr  # Table row for headers
+        %th Young Person Name  # Column header for the name of the young person
+        %th Future Message  # Column header for the message content
+        %th Alert Commit  # Column header for the alert commit
+        %th Active  # Column header to show if the alert is active
+        %th Actions  # Column header for actions like view and delete
+    %tbody  # Table body containing the rows of data
+      - @future_message_alerts.each do |alert|  # Iterates over each alert in the @future_message_alerts collection
+        %tr  # Table row for each alert
+          %td= User.find_by(id: FutureMessage.find_by(id: alert.future_message_id).user_id).name
+          # Displays the name of the user associated with the future message. 
+          # This involves querying the database twice; consider optimizing.
+
+          %td= FutureMessage.find_by(id: alert.future_message_id).content
+          # Displays the content of the future message associated with the alert.
+
+          %td= alert.commit
+          # Displays the commit string of the alert, describing the alert's condition or purpose.
+
+          %td= alert.active ? 'Yes' : 'No'
+          # Displays whether the alert is active or not as 'Yes' or 'No'.
+
+          %td
+            = link_to 'Show', future_message_alert_path(alert), class: 'btn btn-outline-info'
+            # Link to view details of the alert. Styled with Bootstrap to be outlined and informational.
+
+            - if alert.active?
+              = link_to 'Delete', deactivate_future_message_alert_path(alert), method: :patch, data: { confirm: 'Are you sure?' }, class: 'btn btn-outline-warning'
+              # Provides a link to deactivate the alert if it is currently active. 
+              # Includes a confirmation prompt to prevent accidental deletions.

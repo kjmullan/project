@@ -1,0 +1,24 @@
+- # This file is a part of the views for creating a new future message alert.
+- # It provides a form for users to set alerts for future messages in the application.
+
+.row.justify-content-center  # Centers the form horizontally within the row for better alignment
+  .col-sm-8.col-lg-6  # Defines the size of the column for small to large devices
+    .card
+      .card-header Future Message Alert  # Card header displaying the purpose of the form
+
+      = simple_form_for @future_message_alert do |f|  # simple_form used for creating the form bound to the @future_message_alert model
+        = f.error_notification  # Shows any error messages if form validations fail
+
+        .form-inputs
+          = f.input :commit, as: :text, required: true, label: 'Your alert', input_html: { rows: 4 }
+          # Text area for inputting the alert details. Marked as required and specifies that the input is a text area with 4 rows.
+
+          = f.input :future_message_id, as: :hidden, input_html: { value: @future_message_alert.future_message_id }
+          # Hidden field to associate the alert with a specific future message using its ID. Value is retrieved from the model.
+
+        .form-actions
+          = f.button :submit, 'Confirm', class: 'btn btn-success'
+          # Submit button for the form, styled with Bootstrap's 'success' class for visual emphasis.
+
+          = link_to 'Back', future_messages_path, class: 'btn btn-secondary'
+          # 'Back' button to navigate to the list of future messages. Styled with Bootstrap's 'secondary' class.
